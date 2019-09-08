@@ -13,13 +13,15 @@ namespace MySearch.Controllers
 {
     public class HomeController : Controller
     {
-        //todo: delete it, add in db
-        private const string bingAccessKey = "";
-        private const string uriBase = "https://api.cognitive.microsoft.com/bing/v7.0/search";
+        private readonly DbEditor db;
+
+        public HomeController(DbEditor db)
+        {
+            this.db = db;
+        }
 
         public IActionResult Index()
         {
-             // = results;
             return View();
         }
 
@@ -37,50 +39,68 @@ namespace MySearch.Controllers
         [HttpPost]
         public IActionResult Index(string searchTerm)
         {
-            string results;
-            if (bingAccessKey.Length == 32)
-            {
-                SearchResult result = BingWebSearch(searchTerm);
+            //string results;
+            //SearchResult result = BingWebSearch(searchTerm);
+            //if (result.jsonResult != null)
+            //{
+            //    results = JsonPrettyPrint(result.jsonResult);
+            //}
+            //else
+            //{
+            //    results = "Invalid Bing Search API subscription key!";
+            //}
 
-                results = JsonPrettyPrint(result.jsonResult);
-            }
-            else
-            {
-                results = "Invalid Bing Search API subscription key!";
-            }
+            //AddToDb(searchTerm);
 
-            ViewBag.results = results;
+            //ViewBag.results = results;
             return View();
+        }
+
+        private void AddToDb(string requestString)
+        {
+            SearchRequest request = new SearchRequest();
+            request.SearchRequestId = default;
+            request.SearchString = requestString;
+            request.SearchDate = DateTime.Now;
+
+            db.SaveRequest(request);
         }
 
         /// <summary>
         /// Makes a request to the Bing Web Search API and returns data as a SearchResult.
         /// </summary>
-        static SearchResult BingWebSearch(string searchQuery)
+        private SearchResult BingWebSearch(string searchQuery)
         {
-            // Construct the search request URI.
-            var uriQuery = uriBase + "?q=" + Uri.EscapeDataString(searchQuery);
-
-            // Perform request and get a response.
-            WebRequest request = HttpWebRequest.Create(uriQuery);
-            request.Headers["Ocp-Apim-Subscription-Key"] = bingAccessKey;
-            HttpWebResponse response = (HttpWebResponse)request.GetResponseAsync().Result;
-            string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
-
-            // Create a result object.
-            var searchResult = new SearchResult()
+            SearchEngine engine = db.GetEngines().Where(x => x.Name =="Bing").First();
+            string uriBase = engine.BaseUrl;
+            string bingAccessKey = engine.ApiKey;
+            if (bingAccessKey.Length == 32)
             {
-                jsonResult = json,
-                relevantHeaders = new Dictionary<String, String>()
-            };
+                // Construct the search request URI.
+                var uriQuery = uriBase + "?q=" + Uri.EscapeDataString(searchQuery);
 
-            // Extract Bing HTTP headers.
-            foreach (String header in response.Headers)
-            {
-                if (header.StartsWith("BingAPIs-") || header.StartsWith("X-MSEdge-"))
-                    searchResult.relevantHeaders[header] = response.Headers[header];
+                // Perform request and get a response.
+                WebRequest request = HttpWebRequest.Create(uriQuery);
+                request.Headers["Ocp-Apim-Subscription-Key"] = bingAccessKey;
+                HttpWebResponse response = (HttpWebResponse)request.GetResponseAsync().Result;
+                string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+                // Create a result object.
+                var searchResult = new SearchResult()
+                {
+                    jsonResult = json,
+                    relevantHeaders = new Dictionary<String, String>()
+                };
+
+                // Extract Bing HTTP headers.
+                foreach (String header in response.Headers)
+                {
+                    if (header.StartsWith("BingAPIs-") || header.StartsWith("X-MSEdge-"))
+                        searchResult.relevantHeaders[header] = response.Headers[header];
+                }
+                return searchResult;
             }
-            return searchResult;
+            else return new SearchResult();
         }
 
         /// <summary>
@@ -88,7 +108,7 @@ namespace MySearch.Controllers
         /// </summary>
         /// <param name="json">The raw JSON string.</param>
         /// <returns>The formatted JSON string.</returns>
-        static string JsonPrettyPrint(string json)
+        private string JsonPrettyPrint(string json)
         {
             if (string.IsNullOrEmpty(json))
                 return string.Empty;
