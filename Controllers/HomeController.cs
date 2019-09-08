@@ -16,9 +16,6 @@ namespace MySearch.Controllers
         //todo: delete it, add in db
         private const string bingAccessKey = "";
         private const string uriBase = "https://api.cognitive.microsoft.com/bing/v7.0/search";
-        //private const string searchTerm = "Microsoft Cognitive Services";
-
-        //public string results;
 
         public IActionResult Index()
         {
