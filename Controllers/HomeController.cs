@@ -53,7 +53,7 @@ namespace MySearch.Controllers
             //}
             
             List<Models.SearchResult> results = YandexWebSearch(searchTerm);
-            //AddToDb(searchTerm, results);
+            AddToDb(searchTerm, results);
 
             ViewBag.searchString = searchTerm;
             ViewBag.results = results;
@@ -76,26 +76,23 @@ namespace MySearch.Controllers
         /// </summary>
         private List<Models.SearchResult> YandexWebSearch(string searchQuery)
         {
-            //Login on Yandex.
-            string user = "sharkliza";
-
             SearchEngine engine = db.GetEngines().Where(x => x.Name == "Yandex").First();
             string urlBase = engine.BaseUrl;
             string YaAccessKey = engine.ApiKey;
  
             //Ready request string.
-            string completeUrl = String.Format(urlBase, user, YaAccessKey, searchQuery);
+            string completeUrl = String.Format(urlBase, YaAccessKey, searchQuery);
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(completeUrl);
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
-            return ParseYandexResponse(response);
+            return ParseYandexResponse(response, engine);
         }
 
         /// <summary>
         /// Parse xml from response from Yandex.Xml API and returns data as a List of SearchResult.
         /// </summary>
-        public static List<Models.SearchResult> ParseYandexResponse(HttpWebResponse response)
+        public static List<Models.SearchResult> ParseYandexResponse(HttpWebResponse response, SearchEngine engine)
         {
             List<Models.SearchResult> results = new List<Models.SearchResult>();
 
@@ -119,12 +116,37 @@ namespace MySearch.Controllers
                 {
                     result.Description = GetValue(groupQuery.ElementAt(i), "headline");
                 }
-                //result.IndexedTime = GetValue(groupQuery.ElementAt(i), "modtime");
                 
+                string modtime= GetValue(groupQuery.ElementAt(i), "modtime");
+
+                result.IndexedTime = TryParseModTime(modtime);
+
+                result.SearchEngine = engine;
+
                 results.Add(result);
             }
 
             return results;
+        }
+
+        public static DateTime TryParseModTime(string modTime) //example: modTime = 20160331T032014
+        {
+            try
+            {
+                int year = int.Parse(modTime.Substring(0, 4));
+                int month = int.Parse(modTime.Substring(4, 2));
+                int day = int.Parse(modTime.Substring(6, 2));
+                int hour = int.Parse(modTime.Substring(9, 2));
+                int minute = int.Parse(modTime.Substring(11, 2));
+                int second = int.Parse(modTime.Substring(13, 2));
+
+                return new DateTime(year, month, day, hour, minute, second);
+            }
+            catch
+            {
+                return new DateTime();
+            }
+            
         }
 
 

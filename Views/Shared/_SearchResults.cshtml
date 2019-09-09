@@ -8,11 +8,8 @@
                 <br />
                 <a class="h6" style="color:forestgreen;" href=@entity.Url>@entity.Url</a>
                 <div>
-                    @entity.Description
+                    @entity.IndexedTime.ToLongDateString() - @entity.Description
                 </div>
-                @*<div>
-                    @entity.IndexedTime
-                </div>*@
             </div>
          }
     }
