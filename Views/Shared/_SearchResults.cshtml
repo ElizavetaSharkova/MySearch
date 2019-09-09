@@ -1,3 +1,16 @@
 ﻿<div class="results-block">
-    @ViewBag.results
+    @if (ViewBag.results != null)
+    {
+        @foreach (SearchResult entity in ViewBag.results)
+        {
+            <div class="result my-3">
+                <a class="h5" href=@entity.Url>@entity.Title</a>
+                <br />
+                <a class="h6" style="color:forestgreen;" href=@entity.Url>@entity.Url</a>
+                <div>
+                    @entity.IndexedTime.ToLongDateString() - @entity.Description
+                </div>
+            </div>
+         }
+    }
 </div>

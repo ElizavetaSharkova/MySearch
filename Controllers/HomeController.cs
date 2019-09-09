@@ -8,6 +8,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MySearch.Models;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace MySearch.Controllers
 {
@@ -49,21 +51,119 @@ namespace MySearch.Controllers
             //{
             //    results = "Invalid Bing Search API subscription key!";
             //}
+            
+            List<Models.SearchResult> results = YandexWebSearch(searchTerm);
+            AddToDb(searchTerm, results);
 
-            //AddToDb(searchTerm);
-
-            //ViewBag.results = results;
+            ViewBag.searchString = searchTerm;
+            ViewBag.results = results;
             return View();
         }
 
-        private void AddToDb(string requestString)
+        private void AddToDb(string requestString, List<Models.SearchResult> results)
         {
             SearchRequest request = new SearchRequest();
             request.SearchRequestId = default;
             request.SearchString = requestString;
             request.SearchDate = DateTime.Now;
+            request.SearchResults = results;
 
             db.SaveRequest(request);
+        }
+
+        /// <summary>
+        /// Makes a request to the Yandex.Xml API and returns data as a List of SearchResult.
+        /// </summary>
+        private List<Models.SearchResult> YandexWebSearch(string searchQuery)
+        {
+            SearchEngine engine = db.GetEngines().Where(x => x.Name == "Yandex").First();
+            string urlBase = engine.BaseUrl;
+            string YaAccessKey = engine.ApiKey;
+ 
+            //Ready request string.
+            string completeUrl = String.Format(urlBase, YaAccessKey, searchQuery);
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(completeUrl);
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+            return ParseYandexResponse(response, engine);
+        }
+
+        /// <summary>
+        /// Parse xml from response from Yandex.Xml API and returns data as a List of SearchResult.
+        /// </summary>
+        public static List<Models.SearchResult> ParseYandexResponse(HttpWebResponse response, SearchEngine engine)
+        {
+            List<Models.SearchResult> results = new List<Models.SearchResult>();
+
+            XmlReader xmlReader = XmlReader.Create(response.GetResponseStream());
+            XDocument xmlResponse = XDocument.Load(xmlReader);
+            var groupQuery = from gr in xmlResponse.Elements().
+                          Elements("response").
+                          Elements("results").
+                          Elements("grouping").
+                          Elements("group")
+                             select gr;
+
+            for (int i = 0; i < groupQuery.Count(); i++)
+            {
+                Models.SearchResult result = new Models.SearchResult();
+                result.SearchResultId = default;
+                result.Url = GetValue(groupQuery.ElementAt(i), "url");
+                result.Title = GetValue(groupQuery.ElementAt(i), "title");
+                result.Description = GetValue(groupQuery.ElementAt(i), "passages");
+                if (result.Description == string.Empty)
+                {
+                    result.Description = GetValue(groupQuery.ElementAt(i), "headline");
+                }
+                
+                string modtime= GetValue(groupQuery.ElementAt(i), "modtime");
+
+                result.IndexedTime = TryParseModTime(modtime);
+
+                result.SearchEngine = engine;
+
+                results.Add(result);
+            }
+
+            return results;
+        }
+
+        public static DateTime TryParseModTime(string modTime) //example: modTime = 20160331T032014
+        {
+            try
+            {
+                int year = int.Parse(modTime.Substring(0, 4));
+                int month = int.Parse(modTime.Substring(4, 2));
+                int day = int.Parse(modTime.Substring(6, 2));
+                int hour = int.Parse(modTime.Substring(9, 2));
+                int minute = int.Parse(modTime.Substring(11, 2));
+                int second = int.Parse(modTime.Substring(13, 2));
+
+                return new DateTime(year, month, day, hour, minute, second);
+            }
+            catch
+            {
+                return new DateTime();
+            }
+            
+        }
+
+
+        /// <summary>
+        /// Get string from XML element by element's name.
+        /// </summary>
+        public static string GetValue(XElement group, string name)
+        {
+            try
+            {
+                return group.Element("doc").Element(name).Value;
+            }
+            //if response hasn't this element
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         /// <summary>
