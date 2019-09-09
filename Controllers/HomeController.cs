@@ -10,12 +10,15 @@ using Microsoft.AspNetCore.Mvc;
 using MySearch.Models;
 using System.Xml;
 using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace MySearch.Controllers
 {
     public class HomeController : Controller
     {
         private readonly DbEditor db;
+
+        private string BING_CLIENT_ID_COOKIE = string.Empty;
 
         public HomeController(DbEditor db)
         {
@@ -41,18 +44,8 @@ namespace MySearch.Controllers
         [HttpPost]
         public IActionResult Index(string searchTerm)
         {
-            //string results;
-            //SearchResult result = BingWebSearch(searchTerm);
-            //if (result.jsonResult != null)
-            //{
-            //    results = JsonPrettyPrint(result.jsonResult);
-            //}
-            //else
-            //{
-            //    results = "Invalid Bing Search API subscription key!";
-            //}
-            
-            List<Models.SearchResult> results = YandexWebSearch(searchTerm);
+            //List<SearchResult> results = YandexWebSearch(searchTerm);
+            List<SearchResult> results = BingWebSearch(searchTerm);
             AddToDb(searchTerm, results);
 
             ViewBag.searchString = searchTerm;
@@ -60,7 +53,7 @@ namespace MySearch.Controllers
             return View();
         }
 
-        private void AddToDb(string requestString, List<Models.SearchResult> results)
+        private void AddToDb(string requestString, List<SearchResult> results)
         {
             SearchRequest request = new SearchRequest();
             request.SearchRequestId = default;
@@ -74,7 +67,7 @@ namespace MySearch.Controllers
         /// <summary>
         /// Makes a request to the Yandex.Xml API and returns data as a List of SearchResult.
         /// </summary>
-        private List<Models.SearchResult> YandexWebSearch(string searchQuery)
+        private List<SearchResult> YandexWebSearch(string searchQuery)
         {
             SearchEngine engine = db.GetEngines().Where(x => x.Name == "Yandex").First();
             string urlBase = engine.BaseUrl;
@@ -92,9 +85,9 @@ namespace MySearch.Controllers
         /// <summary>
         /// Parse xml from response from Yandex.Xml API and returns data as a List of SearchResult.
         /// </summary>
-        public static List<Models.SearchResult> ParseYandexResponse(HttpWebResponse response, SearchEngine engine)
+        public static List<SearchResult> ParseYandexResponse(HttpWebResponse response, SearchEngine engine)
         {
-            List<Models.SearchResult> results = new List<Models.SearchResult>();
+            List<SearchResult> results = new List<SearchResult>();
 
             XmlReader xmlReader = XmlReader.Create(response.GetResponseStream());
             XDocument xmlResponse = XDocument.Load(xmlReader);
@@ -107,7 +100,7 @@ namespace MySearch.Controllers
 
             for (int i = 0; i < groupQuery.Count(); i++)
             {
-                Models.SearchResult result = new Models.SearchResult();
+                SearchResult result = new SearchResult();
                 result.SearchResultId = default;
                 result.Url = GetValue(groupQuery.ElementAt(i), "url");
                 result.Title = GetValue(groupQuery.ElementAt(i), "title");
@@ -117,9 +110,9 @@ namespace MySearch.Controllers
                     result.Description = GetValue(groupQuery.ElementAt(i), "headline");
                 }
                 
-                string modtime= GetValue(groupQuery.ElementAt(i), "modtime");
+                string modtime= GetValue(groupQuery.ElementAt(i), "modtime"); //example: modTime = 20160331T032014
 
-                result.IndexedTime = TryParseModTime(modtime);
+                result.IndexedTime = TryParseStringDate(modtime);
 
                 result.SearchEngine = engine;
 
@@ -129,18 +122,12 @@ namespace MySearch.Controllers
             return results;
         }
 
-        public static DateTime TryParseModTime(string modTime) //example: modTime = 20160331T032014
+        public static DateTime TryParseStringDate(string stringDate)
         {
             try
             {
-                int year = int.Parse(modTime.Substring(0, 4));
-                int month = int.Parse(modTime.Substring(4, 2));
-                int day = int.Parse(modTime.Substring(6, 2));
-                int hour = int.Parse(modTime.Substring(9, 2));
-                int minute = int.Parse(modTime.Substring(11, 2));
-                int second = int.Parse(modTime.Substring(13, 2));
-
-                return new DateTime(year, month, day, hour, minute, second);
+                string[] format = { "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy H:mm:ss", "dd-MM-yyyyTHH:mm:ss.fffZ", "dd-MM-yyyyTH:mm:ss.fffZ", "yyyyMMddTHHmmss" };
+                return DateTime.ParseExact(stringDate, format, null);
             }
             catch
             {
@@ -167,9 +154,9 @@ namespace MySearch.Controllers
         }
 
         /// <summary>
-        /// Makes a request to the Bing Web Search API and returns data as a SearchResult.
+        /// Makes a request to the Bing Web Search API and returns data as a List of SearchResult.
         /// </summary>
-        private SearchResult BingWebSearch(string searchQuery)
+        private List<SearchResult> BingWebSearch(string searchQuery)
         {
             SearchEngine engine = db.GetEngines().Where(x => x.Name =="Bing").First();
             string uriBase = engine.BaseUrl;
@@ -182,102 +169,46 @@ namespace MySearch.Controllers
                 // Perform request and get a response.
                 WebRequest request = HttpWebRequest.Create(uriQuery);
                 request.Headers["Ocp-Apim-Subscription-Key"] = bingAccessKey;
+                request.Headers["X-MSEdge-ClientID"] = BING_CLIENT_ID_COOKIE;
                 HttpWebResponse response = (HttpWebResponse)request.GetResponseAsync().Result;
-                string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
-                // Create a result object.
-                var searchResult = new SearchResult()
-                {
-                    jsonResult = json,
-                    relevantHeaders = new Dictionary<String, String>()
-                };
+                BING_CLIENT_ID_COOKIE = response.Headers["X-MSEdge-ClientID"];
+                List<SearchResult> results = ParseBingResponse(response, engine);
 
-                // Extract Bing HTTP headers.
-                foreach (String header in response.Headers)
-                {
-                    if (header.StartsWith("BingAPIs-") || header.StartsWith("X-MSEdge-"))
-                        searchResult.relevantHeaders[header] = response.Headers[header];
-                }
-                return searchResult;
+                return results;
             }
-            else return new SearchResult();
+            else return new List<SearchResult>();
         }
 
         /// <summary>
-        /// Formats the JSON string by adding line breaks and indents.
+        /// Parse json from response from Bing Search API and returns data as a List of SearchResult.
         /// </summary>
-        /// <param name="json">The raw JSON string.</param>
-        /// <returns>The formatted JSON string.</returns>
-        private string JsonPrettyPrint(string json)
+        public static List<SearchResult> ParseBingResponse(HttpWebResponse response, SearchEngine engine)
         {
+            List<SearchResult> results = new List<SearchResult>();
+
+            string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
             if (string.IsNullOrEmpty(json))
-                return string.Empty;
+                return results;
 
-            json = json.Replace(Environment.NewLine, "").Replace("\t", "");
-
-            StringBuilder sb = new StringBuilder();
-            bool quote = false;
-            bool ignore = false;
-            char last = ' ';
-            int offset = 0;
-            int indentLength = 2;
-
-            foreach (char ch in json)
+            var doc = JObject.Parse(json);
+            var webPagesDoc = doc["webPages"]["value"];
+            foreach (var webPage in webPagesDoc)
             {
-                switch (ch)
-                {
-                    case '"':
-                        if (!ignore) quote = !quote;
-                        break;
-                    case '\\':
-                        if (quote && last != '\\') ignore = true;
-                        break;
-                }
+                SearchResult result = new SearchResult();
+                result.SearchResultId = default;
+                result.Title = webPage["name"].ToString();
+                result.Url = webPage["url"].ToString();
+                result.Description = webPage["snippet"].ToString();
 
-                if (quote)
-                {
-                    sb.Append(ch);
-                    if (last == '\\' && ignore) ignore = false;
-                }
-                else
-                {
-                    switch (ch)
-                    {
-                        case '{':
-                        case '[':
-                            sb.Append(ch);
-                            sb.Append(Environment.NewLine);
-                            sb.Append(new string(' ', ++offset * indentLength));
-                            break;
-                        case ']':
-                        case '}':
-                            sb.Append(Environment.NewLine);
-                            sb.Append(new string(' ', --offset * indentLength));
-                            sb.Append(ch);
-                            break;
-                        case ',':
-                            sb.Append(ch);
-                            sb.Append(Environment.NewLine);
-                            sb.Append(new string(' ', offset * indentLength));
-                            break;
-                        case ':':
-                            sb.Append(ch);
-                            sb.Append(' ');
-                            break;
-                        default:
-                            if (quote || ch != ' ') sb.Append(ch);
-                            break;
-                    }
-                }
-                last = ch;
+                string dateLastCrawled = webPage["dateLastCrawled"].ToString(); //example: 05.09.2019 19:57:00 or 2019-09-02T22:39:00.0000000Z
+
+                result.IndexedTime = TryParseStringDate(dateLastCrawled);
+                result.SearchEngine = engine;
+
+                results.Add(result);
             }
-            return sb.ToString().Trim();
+            return results;
         }
-    }
-
-    public struct SearchResult
-    {
-        public String jsonResult;
-        public Dictionary<String, String> relevantHeaders;
     }
 }
