@@ -45,8 +45,9 @@ namespace MySearch.Controllers
         public IActionResult Index(string searchTerm)
         {
             //List<SearchResult> results = YandexWebSearch(searchTerm);
-            List<SearchResult> results = BingWebSearch(searchTerm);
-            AddToDb(searchTerm, results);
+            //List<SearchResult> results = BingWebSearch(searchTerm);
+            List<SearchResult> results = GoogleWebSearch(searchTerm);
+            //AddToDb(searchTerm, results);
 
             ViewBag.searchString = searchTerm;
             ViewBag.results = results;
@@ -62,6 +63,55 @@ namespace MySearch.Controllers
             request.SearchResults = results;
 
             db.SaveRequest(request);
+        }
+
+        /// <summary>
+        /// Makes a request to the Google Custom Search API and returns data as a List of SearchResult.
+        /// </summary>
+        private List<SearchResult> GoogleWebSearch(string searchQuery)
+        {
+            SearchEngine engine = db.GetEngines().Where(x => x.Name == "Google").First();
+            string urlBase = engine.BaseUrl;
+            string AccessKey = engine.ApiKey;
+
+            //Ready request string.
+            string completeUrl = String.Format(urlBase, AccessKey, searchQuery);
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(completeUrl);
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+            return ParseGoogleResponse(response, engine);
+        }
+
+        /// <summary>
+        /// Parse json from response from Google Custom Search API and returns data as a List of SearchResult.
+        /// </summary>
+        public static List<SearchResult> ParseGoogleResponse(HttpWebResponse response, SearchEngine engine)
+        {
+            List<SearchResult> results = new List<SearchResult>();
+
+            string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
+            if (string.IsNullOrEmpty(json))
+                return results;
+
+            var doc = JObject.Parse(json);
+            var webPagesDoc = doc["items"];
+            foreach (var webPage in webPagesDoc)
+            {
+                SearchResult result = new SearchResult();
+                result.SearchResultId = default;
+                result.Title = webPage["title"].ToString();
+                result.Url = webPage["link"].ToString();
+                result.Description = webPage["snippet"].ToString();
+
+                //string dateLastCrawled = webPage["dateLastCrawled"].ToString();
+
+                result.IndexedTime = new DateTime(); //TryParseStringDate(dateLastCrawled);
+                result.SearchEngine = engine;
+
+                results.Add(result);
+            }
+            return results;
         }
 
         /// <summary>
