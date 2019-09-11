@@ -28,7 +28,8 @@ namespace MySearch.Models
         //найти все результаты по строке запроса
         public IQueryable<SearchResult> GetResultsByRequest(string requestStr)
         {
-            return context.SearchResults.Where(x => x.Request.SearchString == requestStr);
+            return context.SearchResults.Where(x => x.Request.SearchString.Contains(requestStr))
+                .OrderByDescending(y => y.IndexedTime).Take(10);
         }
 
         //сохранить новый request вместе со всеми results в БД

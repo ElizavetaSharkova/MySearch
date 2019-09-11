@@ -64,16 +64,28 @@ namespace MySearch.Controllers
             AddToDb(searchTerm, results);
             ViewBag.searchString = searchTerm;
             ViewBag.results = results;
+            ViewBag.isDisplayEngine = true;
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult History(string searchTerm)
+        {
+            List<SearchResult> results = db.GetResultsByRequest(searchTerm).ToList();
+            ViewBag.searchString = searchTerm;
+            ViewBag.results = results;
             return View();
         }
 
         private void AddToDb(string requestString, List<SearchResult> results)
         {
-            SearchRequest request = new SearchRequest();
-            request.SearchRequestId = default;
-            request.SearchString = requestString;
-            request.SearchDate = DateTime.Now;
-            request.SearchResults = results;
+            SearchRequest request = new SearchRequest
+            {
+                SearchRequestId = default,
+                SearchString = requestString,
+                SearchDate = DateTime.Now,
+                SearchResults = results
+            };
 
             db.SaveRequest(request);
         }

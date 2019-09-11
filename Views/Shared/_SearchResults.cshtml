@@ -1,9 +1,12 @@
 ﻿<div class="results-block">
     @if (ViewBag.results != null)
     {
-    <div class="h3">
-        @ViewBag.results[0].SearchEngine.Name <span>:</span>
-    </div>
+        @if (ViewBag.isDisplayEngine != null)
+        {
+            <div class="h3">
+                @ViewBag.results[0].SearchEngine.Name <span>:</span>
+            </div>
+        }
         @foreach (SearchResult entity in ViewBag.results)
         {
             <div class="result my-3">
