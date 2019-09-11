@@ -12,5 +12,8 @@ namespace MySearch.Models
         public DbSet<SearchResult> SearchResults { get; set; }
         public DbSet<SearchRequest> SearchRequests { get; set; }
         public DbSet<SearchEngine> SearchEngines { get; set; }
+        public DbSet<RequestsParameter> RequestsParameters { get; set; }
+        public DbSet<ResponseType> ResponseTypes { get; set; }
+        public DbSet<RequestHeader> RequestHeaders { get; set; }
     }
 }
