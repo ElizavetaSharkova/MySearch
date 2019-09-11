@@ -11,14 +11,19 @@ using MySearch.Models;
 using System.Xml;
 using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace MySearch.Controllers
 {
+    public struct ParseResponseStruct
+    {
+        public SearchEngine engine;
+        public HttpWebResponse webResponse;
+    }
+
     public class HomeController : Controller
     {
         private readonly DbEditor db;
-
-        private string BING_CLIENT_ID_COOKIE = string.Empty;
 
         public HomeController(DbEditor db)
         {
@@ -42,13 +47,21 @@ namespace MySearch.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(string searchTerm)
+        public async Task<IActionResult> Index(string searchTerm)
         {
-            //List<SearchResult> results = YandexWebSearch(searchTerm);
-            //List<SearchResult> results = BingWebSearch(searchTerm);
-            List<SearchResult> results = GoogleWebSearch(searchTerm);
-            //AddToDb(searchTerm, results);
+            IQueryable<SearchEngine> searchEngines = db.GetEngines();
+            List<Task<ParseResponseStruct>> responses = new List<Task<ParseResponseStruct>>();
+            foreach (SearchEngine engine in searchEngines)
+            {
+                if (!engine.IsDisable)
+                {
+                    responses.Add(Task.Run(() => SendWebRequestAsync(searchTerm, engine)));
+                }
+            }
+            ParseResponseStruct fasterResponse = await Task.WhenAny(responses).Result;
+            List<SearchResult> results = ParseResponse(fasterResponse);
 
+            AddToDb(searchTerm, results);
             ViewBag.searchString = searchTerm;
             ViewBag.results = results;
             return View();
@@ -65,106 +78,167 @@ namespace MySearch.Controllers
             db.SaveRequest(request);
         }
 
-        /// <summary>
-        /// Makes a request to the Google Custom Search API and returns data as a List of SearchResult.
-        /// </summary>
-        private List<SearchResult> GoogleWebSearch(string searchQuery)
+        private HttpWebRequest BuildRequestToEngine(string searchQuery, SearchEngine engine)
         {
-            SearchEngine engine = db.GetEngines().Where(x => x.Name == "Google").First();
-            string urlBase = engine.BaseUrl;
-            string AccessKey = engine.ApiKey;
+            string completeUrl = engine.BaseUrl;
+            foreach (RequestsParameter parameter in engine.Parameters)
+            {
+                if (parameter.ParametrName == "search")
+                {
+                    completeUrl += parameter.ParametrValue + "=" + Uri.EscapeDataString(searchQuery);
+                }
+                else
+                {
+                    completeUrl += parameter.ParametrName + "=" + parameter.ParametrValue;
+                }
 
-            //Ready request string.
-            string completeUrl = String.Format(urlBase, AccessKey, searchQuery);
+                if (parameter != engine.Parameters.Last<RequestsParameter>())
+                {
+                    completeUrl += "&";
+                }
+            }
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(completeUrl);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
-            return ParseGoogleResponse(response, engine);
+            if (engine.Headers != null)
+            {
+                foreach (RequestHeader header in engine.Headers)
+                {
+                    if (header.HeaderValue != string.Empty)
+                    {
+                        request.Headers[header.HeaderName] = header.HeaderValue;
+                    }
+                }
+            }
+
+
+            return request;
         }
 
         /// <summary>
-        /// Parse json from response from Google Custom Search API and returns data as a List of SearchResult.
+        /// Makes a request to the any API and returns data as a ParseResponseStruct with response and engine.
         /// </summary>
-        public static List<SearchResult> ParseGoogleResponse(HttpWebResponse response, SearchEngine engine)
+        private async Task<ParseResponseStruct> SendWebRequestAsync(string searchQuery, SearchEngine engine)
+        {
+            HttpWebRequest request = BuildRequestToEngine(searchQuery, engine);
+            HttpWebResponse response = (HttpWebResponse) await request.GetResponseAsync();
+            foreach (string responseHeader in response.Headers)
+            {
+                foreach (RequestHeader requestHeader in engine.Headers)
+                {
+                    if (responseHeader.Contains(requestHeader.HeaderName.Substring(0, 9)) && 
+                        string.IsNullOrEmpty(requestHeader.HeaderValue))
+                    {
+                        requestHeader.HeaderValue = responseHeader;
+                        db.SaveRequestHeaderValue(requestHeader.RequestHeaderId, responseHeader);
+                    }
+                }
+            }
+
+            ParseResponseStruct prs = new ParseResponseStruct
+            {
+                webResponse = response,
+                engine = engine
+            };
+
+            return prs;
+        }
+
+        /// <summary>
+        /// Read response, call parse method according to response type and returns data as a List of SearchResult.
+        /// </summary>
+        public static List<SearchResult> ParseResponse(ParseResponseStruct prs)
+        { 
+            if (prs.engine.Type.Type == "xml")
+            {
+                XmlReader xmlReader = XmlReader.Create(prs.webResponse.GetResponseStream());
+                XDocument xmlResponse = XDocument.Load(xmlReader);
+
+                return ParseXml(xmlResponse, prs.engine);
+            }
+            else if (prs.engine.Type.Type == "json")
+            {
+                string responseString;
+                using (Stream responseStream = prs.webResponse.GetResponseStream())
+                {
+                    responseString = new StreamReader(responseStream).ReadToEnd();
+                }
+
+                if (string.IsNullOrEmpty(responseString))
+                    return new List<SearchResult>();
+
+                return ParseJson(responseString, prs.engine);
+            }
+            return new List<SearchResult>();
+        }
+
+        public static List<SearchResult> ParseJson(string json, SearchEngine engine)
         {
             List<SearchResult> results = new List<SearchResult>();
-
-            string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
-            if (string.IsNullOrEmpty(json))
-                return results;
-
-            var doc = JObject.Parse(json);
-            var webPagesDoc = doc["items"];
-            foreach (var webPage in webPagesDoc)
+            ResponseType responseType = engine.Type;
+            
+            JObject doc = JObject.Parse(json);
+            JToken RootElement= doc.SelectToken(responseType.RootElementPath);
+            foreach (JToken childElement in RootElement)
             {
-                SearchResult result = new SearchResult();
-                result.SearchResultId = default;
-                result.Title = webPage["title"].ToString();
-                result.Url = webPage["link"].ToString();
-                result.Description = webPage["snippet"].ToString();
+                SearchResult result = new SearchResult
+                {
+                    SearchResultId = default,
+                    SearchEngine = engine,
+                    Title = childElement[responseType.TitleElement].ToString(),
+                    Url = childElement[responseType.UrlElement].ToString(),
+                    Description = childElement[responseType.DescriptionElement].ToString()
+                };
 
-                //string dateLastCrawled = webPage["dateLastCrawled"].ToString();
-
-                result.IndexedTime = new DateTime(); //TryParseStringDate(dateLastCrawled);
-                result.SearchEngine = engine;
+                if (!string.IsNullOrEmpty(responseType.DateElement))
+                {
+                    string dateString = childElement[responseType.DateElement].ToString();
+                    result.IndexedTime = TryParseStringDate(dateString);
+                }
+                else
+                {
+                    result.IndexedTime = null;
+                }
 
                 results.Add(result);
             }
             return results;
         }
 
-        /// <summary>
-        /// Makes a request to the Yandex.Xml API and returns data as a List of SearchResult.
-        /// </summary>
-        private List<SearchResult> YandexWebSearch(string searchQuery)
-        {
-            SearchEngine engine = db.GetEngines().Where(x => x.Name == "Yandex").First();
-            string urlBase = engine.BaseUrl;
-            string YaAccessKey = engine.ApiKey;
- 
-            //Ready request string.
-            string completeUrl = String.Format(urlBase, YaAccessKey, searchQuery);
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(completeUrl);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-            return ParseYandexResponse(response, engine);
-        }
-
-        /// <summary>
-        /// Parse xml from response from Yandex.Xml API and returns data as a List of SearchResult.
-        /// </summary>
-        public static List<SearchResult> ParseYandexResponse(HttpWebResponse response, SearchEngine engine)
+        // <summary>
+        // Parse xml from response from Yandex.Xml API and returns data as a List of SearchResult.
+        // </summary>
+        public static List<SearchResult> ParseXml(XDocument xmlResponse, SearchEngine engine)
         {
             List<SearchResult> results = new List<SearchResult>();
 
-            XmlReader xmlReader = XmlReader.Create(response.GetResponseStream());
-            XDocument xmlResponse = XDocument.Load(xmlReader);
-            var groupQuery = from gr in xmlResponse.Elements().
-                          Elements("response").
-                          Elements("results").
-                          Elements("grouping").
-                          Elements("group")
-                             select gr;
+            ResponseType responseType = engine.Type;
+
+            string[] path = responseType.RootElementPath.Split(".");
+
+            IEnumerable<XElement> groupQuery = xmlResponse.Elements(path[0]);
+            for (int i = 1; i < path.Length; i++)
+            {
+                groupQuery = groupQuery.Elements(path[i]);
+            }
 
             for (int i = 0; i < groupQuery.Count(); i++)
             {
-                SearchResult result = new SearchResult();
-                result.SearchResultId = default;
-                result.Url = GetValue(groupQuery.ElementAt(i), "url");
-                result.Title = GetValue(groupQuery.ElementAt(i), "title");
-                result.Description = GetValue(groupQuery.ElementAt(i), "passages");
+                SearchResult result = new SearchResult
+                {
+                    SearchResultId = default,
+                    Url = GetValue(groupQuery.ElementAt(i), responseType.UrlElement),
+                    Title = GetValue(groupQuery.ElementAt(i), responseType.TitleElement),
+                    Description = GetValue(groupQuery.ElementAt(i), responseType.DescriptionElement),
+                    SearchEngine = engine
+                };
                 if (result.Description == string.Empty)
                 {
                     result.Description = GetValue(groupQuery.ElementAt(i), "headline");
                 }
-                
-                string modtime= GetValue(groupQuery.ElementAt(i), "modtime"); //example: modTime = 20160331T032014
 
+                string modtime = GetValue(groupQuery.ElementAt(i), responseType.DateElement); //example: modTime = 20160331T032014
                 result.IndexedTime = TryParseStringDate(modtime);
-
-                result.SearchEngine = engine;
 
                 results.Add(result);
             }
@@ -172,7 +246,7 @@ namespace MySearch.Controllers
             return results;
         }
 
-        public static DateTime TryParseStringDate(string stringDate)
+        public static DateTime? TryParseStringDate(string stringDate)
         {
             try
             {
@@ -181,7 +255,7 @@ namespace MySearch.Controllers
             }
             catch
             {
-                return new DateTime();
+                return null;
             }
             
         }
@@ -203,62 +277,7 @@ namespace MySearch.Controllers
             }
         }
 
-        /// <summary>
-        /// Makes a request to the Bing Web Search API and returns data as a List of SearchResult.
-        /// </summary>
-        private List<SearchResult> BingWebSearch(string searchQuery)
-        {
-            SearchEngine engine = db.GetEngines().Where(x => x.Name =="Bing").First();
-            string uriBase = engine.BaseUrl;
-            string bingAccessKey = engine.ApiKey;
-            if (bingAccessKey.Length == 32)
-            {
-                // Construct the search request URI.
-                var uriQuery = uriBase + "?q=" + Uri.EscapeDataString(searchQuery);
-
-                // Perform request and get a response.
-                WebRequest request = HttpWebRequest.Create(uriQuery);
-                request.Headers["Ocp-Apim-Subscription-Key"] = bingAccessKey;
-                request.Headers["X-MSEdge-ClientID"] = BING_CLIENT_ID_COOKIE;
-                HttpWebResponse response = (HttpWebResponse)request.GetResponseAsync().Result;
-
-                BING_CLIENT_ID_COOKIE = response.Headers["X-MSEdge-ClientID"];
-                List<SearchResult> results = ParseBingResponse(response, engine);
-
-                return results;
-            }
-            else return new List<SearchResult>();
-        }
-
-        /// <summary>
-        /// Parse json from response from Bing Search API and returns data as a List of SearchResult.
-        /// </summary>
-        public static List<SearchResult> ParseBingResponse(HttpWebResponse response, SearchEngine engine)
-        {
-            List<SearchResult> results = new List<SearchResult>();
-
-            string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
-            if (string.IsNullOrEmpty(json))
-                return results;
-
-            var doc = JObject.Parse(json);
-            var webPagesDoc = doc["webPages"]["value"];
-            foreach (var webPage in webPagesDoc)
-            {
-                SearchResult result = new SearchResult();
-                result.SearchResultId = default;
-                result.Title = webPage["name"].ToString();
-                result.Url = webPage["url"].ToString();
-                result.Description = webPage["snippet"].ToString();
-
-                string dateLastCrawled = webPage["dateLastCrawled"].ToString(); //example: 05.09.2019 19:57:00 or 2019-09-02T22:39:00.0000000Z
-
-                result.IndexedTime = TryParseStringDate(dateLastCrawled);
-                result.SearchEngine = engine;
-
-                results.Add(result);
-            }
-            return results;
-        }
     }
+
+
 }
