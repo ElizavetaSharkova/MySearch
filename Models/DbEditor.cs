@@ -37,17 +37,36 @@ namespace MySearch.Models
         {
             if (request.SearchRequestId == default)
             {
-                context.Entry(request).State = EntityState.Added;
                 if (request.SearchResults != null)
                 {
                     foreach (SearchResult result in request.SearchResults)
                     {
-                        if (result.SearchResultId == default)
+                        if (result.SearchResultId == default && !IsExistResult(result))
+                        {
                             context.Entry(result).State = EntityState.Added;
+                        }
                     }
                 }
+                context.Entry(request).State = EntityState.Added;
             }
             context.SaveChanges();
+        }
+
+        public bool IsExistResult(SearchResult result)
+        {
+            IQueryable<SearchRequest> requests = context.SearchRequests.Where(x => 
+                x.SearchString == result.Request.SearchString
+            );
+            if (requests == null)
+            {
+                return false;
+            }
+            IQueryable<SearchResult> results = context.SearchResults.Where(x => 
+                x.Url == result.Url &&
+                x.IndexedTime >= result.IndexedTime
+            );
+
+            return (results != null);
         }
 
         public void SaveRequestHeaderValue(int id, string value)
