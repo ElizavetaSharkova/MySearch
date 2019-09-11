@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MySearch.Models;
 
 namespace MySearch.Migrations
 {
     [DbContext(typeof(SearchContext))]
-    partial class SearchContextModelSnapshot : ModelSnapshot
+    [Migration("20190910151533_deleteType")]
+    partial class deleteType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,7 +69,7 @@ namespace MySearch.Migrations
 
                     b.Property<string>("DescriptionElement");
 
-                    b.Property<string>("RootElementPath");
+                    b.Property<string>("RootElement");
 
                     b.Property<string>("TitleElement");
 
@@ -88,15 +90,13 @@ namespace MySearch.Migrations
 
                     b.Property<string>("BaseUrl");
 
-                    b.Property<bool>("IsDisable");
-
                     b.Property<string>("Name");
 
-                    b.Property<int?>("TypeResponseTypeId");
+                    b.Property<int?>("ResponseTypeId");
 
                     b.HasKey("SearchEngineId");
 
-                    b.HasIndex("TypeResponseTypeId");
+                    b.HasIndex("ResponseTypeId");
 
                     b.ToTable("SearchEngines");
                 });
@@ -159,9 +159,9 @@ namespace MySearch.Migrations
 
             modelBuilder.Entity("MySearch.Models.SearchEngine", b =>
                 {
-                    b.HasOne("MySearch.Models.ResponseType", "Type")
+                    b.HasOne("MySearch.Models.ResponseType")
                         .WithMany("Engines")
-                        .HasForeignKey("TypeResponseTypeId");
+                        .HasForeignKey("ResponseTypeId");
                 });
 
             modelBuilder.Entity("MySearch.Models.SearchResult", b =>

@@ -17,7 +17,12 @@ namespace MySearch.Models
         //выбрать все записи из таблицы SearchEngine
         public IQueryable<SearchEngine> GetEngines()
         {
-            return context.SearchEngines.OrderBy(x => x.Name);
+            var engines = context.SearchEngines.OrderBy(x => x.Name)
+                .Include(e => e.Type)
+                .Include(e => e.Headers)
+                .Include(e => e.Parameters);
+
+            return engines;
         }
 
         //найти все результаты по строке запроса
@@ -27,7 +32,7 @@ namespace MySearch.Models
         }
 
         //сохранить новый request вместе со всеми results в БД
-        public int SaveRequest(SearchRequest request)
+        public void SaveRequest(SearchRequest request)
         {
             if (request.SearchRequestId == default)
             {
@@ -40,13 +45,16 @@ namespace MySearch.Models
                             context.Entry(result).State = EntityState.Added;
                     }
                 }
-
             }
-
-           
             context.SaveChanges();
+        }
 
-            return request.SearchRequestId;
+        public void SaveRequestHeaderValue(int id, string value)
+        {
+            RequestHeader header = context.RequestHeaders.Where(x => x.RequestHeaderId == id).First();
+            header.HeaderValue = value;
+            context.Entry(header).State = EntityState.Modified;
+            context.SaveChanges();
         }
 
     }

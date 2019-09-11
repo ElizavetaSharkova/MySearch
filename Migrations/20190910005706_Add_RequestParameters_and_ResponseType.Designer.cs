@@ -3,40 +3,23 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MySearch.Models;
 
 namespace MySearch.Migrations
 {
     [DbContext(typeof(SearchContext))]
-    partial class SearchContextModelSnapshot : ModelSnapshot
+    [Migration("20190910005706_Add_RequestParameters_and_ResponseType")]
+    partial class Add_RequestParameters_and_ResponseType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("MySearch.Models.RequestHeader", b =>
-                {
-                    b.Property<int>("RequestHeaderId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("HeaderName");
-
-                    b.Property<string>("HeaderValue");
-
-                    b.Property<int?>("engineSearchEngineId");
-
-                    b.HasKey("RequestHeaderId");
-
-                    b.HasIndex("engineSearchEngineId");
-
-                    b.ToTable("RequestHeaders");
-                });
 
             modelBuilder.Entity("MySearch.Models.RequestsParameter", b =>
                 {
@@ -67,7 +50,7 @@ namespace MySearch.Migrations
 
                     b.Property<string>("DescriptionElement");
 
-                    b.Property<string>("RootElementPath");
+                    b.Property<string>("RootElement");
 
                     b.Property<string>("TitleElement");
 
@@ -86,9 +69,9 @@ namespace MySearch.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("BaseUrl");
+                    b.Property<string>("ApiKey");
 
-                    b.Property<bool>("IsDisable");
+                    b.Property<string>("BaseUrl");
 
                     b.Property<string>("Name");
 
@@ -141,13 +124,6 @@ namespace MySearch.Migrations
                     b.HasIndex("SearchEngineId");
 
                     b.ToTable("SearchResults");
-                });
-
-            modelBuilder.Entity("MySearch.Models.RequestHeader", b =>
-                {
-                    b.HasOne("MySearch.Models.SearchEngine", "engine")
-                        .WithMany("Headers")
-                        .HasForeignKey("engineSearchEngineId");
                 });
 
             modelBuilder.Entity("MySearch.Models.RequestsParameter", b =>
