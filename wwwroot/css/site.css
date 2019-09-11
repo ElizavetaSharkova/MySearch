@@ -54,3 +54,47 @@ body {
   height: 60px;
   line-height: 60px; /* Vertically center the text there */
 }
+
+form {
+    width: 300px;
+    position: relative;
+}
+
+form input {
+    width: 100%;
+    height: 42px;
+    padding-left: 10px;
+    border: 2px solid #17a2b8;
+    border-radius: 5px;
+    outline: none;
+    background: #F9F0DA;
+    color: #9E9C9C;
+}
+
+form button {
+    position: absolute;
+    top: 0;
+    right: 0px;
+    width: 42px;
+    height: 42px;
+    border: none;
+    background: #17a2b8;
+    border-radius: 0 7px 7px 0;
+    cursor: pointer;
+}
+
+form button:before {
+    content: "\1F50D";
+    font-family: FontAwesome;
+    font-size: 16px;
+}
+
+div.results-block {
+    margin-top: 10px;
+}
+
+.center-block {
+    margin: 0 auto;
+    position: relative;
+    width: fit-content;
+}

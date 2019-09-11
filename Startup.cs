@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using MySearch.Models;
 
 namespace MySearch
 {
@@ -33,6 +35,12 @@ namespace MySearch
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            var connection = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<SearchContext>
+                (options => options.UseSqlServer(connection));
+
+            services.AddTransient<DbEditor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,0 +1,26 @@
+﻿<div class="results-block">
+    @if (ViewBag.results != null)
+    {
+        @if (ViewBag.isDisplayEngine != null)
+        {
+            <div class="h3">
+                @ViewBag.results[0].SearchEngine.Name <span>:</span>
+            </div>
+        }
+        @foreach (SearchResult entity in ViewBag.results)
+        {
+            <div class="result my-3">
+                <a class="h5" href=@entity.Url>@entity.Title</a>
+                <br />
+                <a class="h6" style="color:forestgreen;" href=@entity.Url>@entity.Url</a>
+                <div>
+                    @if(entity.IndexedTime != null)
+                    {
+                        @entity.IndexedTime.Value.ToLongDateString()<span> - </span>
+                    }
+                    @entity.Description
+                </div>
+            </div>
+         }
+    }
+</div>
