@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using MySearch.Models;
+using MySearch.Controllers;
 
 namespace MySearch
 {
@@ -41,6 +42,7 @@ namespace MySearch
                 (options => options.UseSqlServer(connection));
 
             services.AddTransient<DbEditor>();
+            services.AddTransient<HttpService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
