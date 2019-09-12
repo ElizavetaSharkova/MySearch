@@ -1,0 +1,47 @@
+using MySearch.Controllers;
+using MySearch.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Xml;
+using System.Xml.Linq;
+using Xunit;
+
+namespace XUnitTestProject
+{
+    public class HttpService_UnitTests
+    {
+
+        [Theory(DisplayName = "GetCompliteUrl")]
+        [InlineData("https://api.cognitive.microsoft.com/bing/v7.0/search?q=angular&sortby=date",
+            "angular", "search", "q", "sortby", "date",
+            "https://api.cognitive.microsoft.com/bing/v7.0/search?")]
+        [InlineData("https://www.googleapis.com/customsearch/v1?query=yandex&key=1234",
+            "yandex", "search", "query", "key", "1234",
+            "https://www.googleapis.com/customsearch/v1?")]
+        public void GetCompliteUrl_Test(string expected, string searchQuery, string parameterName1, string parameterValue1, string parameterName2, string parameterValue2, string baseUrl)
+        {
+            List<RequestsParameter> parameters = new List<RequestsParameter>();
+            parameters.Add(new RequestsParameter
+            {
+                ParametrName = parameterName1,
+                ParametrValue = parameterValue1,
+                RequestsParameterId = 1
+            });
+            parameters.Add(new RequestsParameter
+            {
+                ParametrName = parameterName2,
+                ParametrValue = parameterValue2,
+                RequestsParameterId = 2
+            });
+            HttpService service = new HttpService();
+
+            string result = service.GetCompliteUrl(searchQuery, parameters, baseUrl);
+
+            Assert.Equal(expected, result);
+        }
+
+        
+    }
+}

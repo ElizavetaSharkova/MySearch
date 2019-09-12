@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<yandexsearch version="1.0"> 
+  <group>
+    <title>
+      yandex - title
+    </title>
+    <modtime>
+      20070510T040000
+    </modtime>
+    <passages>
+      <passage>
+        yandex - description
+      </passage>
+    </passages>
+    <mime-type>
+      text/html
+    </mime-type>
+  </group>
+</yandexsearch>

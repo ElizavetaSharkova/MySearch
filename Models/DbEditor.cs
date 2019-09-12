@@ -1,12 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MySearch.Models
 {
-    public class DbEditor
+    public class DbEditor: IDbEditor
     {
         private readonly SearchContext context;
         public DbEditor(SearchContext context)

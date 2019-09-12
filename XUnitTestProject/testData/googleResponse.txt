@@ -1,0 +1,54 @@
+{
+ "items": [
+  {
+   "title": "Angular",
+   "link": "https://angular.io/",
+   "snippet": "Angular is a platform for building mobile and desktop web applications. Join the \ncommunity of millions of developers who build compelling user interfaces with ..."
+  },
+  {
+   "title": "AngularJS — Superheroic JavaScript MVW Framework",
+   "link": "https://angularjs.org/",
+   "snippet": "AngularJS is what HTML would have been, had it been designed for building \nweb-apps. Declarative templates with data-binding, MVW, MVVM, MVC, ..."
+  },
+  {
+   "title": "Getting Started with Angular: Your First App - Angular",
+   "link": "https://angular.io/start",
+   "snippet": "This tutorial introduces you to the essentials of Angular. It leverages what you \nalready know about HTML and JavaScript—plus some useful Angular features—\nto ..."
+  },
+  {
+   "title": "Angular (web framework) - Wikipedia",
+   "link": "https://en.wikipedia.org/wiki/Angular_(web_framework)",
+   "snippet": "Angular is a TypeScript-based open-source web application framework led by \nthe Angular Team at Google and by a community of individuals and corporations."
+  },
+  {
+   "title": "angular/angular: One framework. Mobile & desktop. - GitHub",
+   "link": "https://github.com/angular/angular",
+   "snippet": "One framework. Mobile & desktop. Contribute to angular/angular development by \ncreating an account on GitHub."
+  },
+  {
+   "title": "AngularJS Tutorial",
+   "link": "https://www.w3schools.com/angular/",
+   "snippet": "AngularJS extends HTML with new attributes. AngularJS is perfect for Single \nPage Applications (SPAs). AngularJS is easy to learn. Start learning AngularJS ..."
+  },
+  {
+   "title": "Angular · GitHub",
+   "link": "https://github.com/angular",
+   "snippet": "Angular has 191 repositories available. Follow their code on GitHub."
+  },
+  {
+   "title": "Angular Material",
+   "link": "https://material.angular.io/",
+   "snippet": "Sprint from Zero to App. Hit the ground running with comprehensive, modern UI \ncomponents that work across the web, mobile and desktop."
+  },
+  {
+   "title": "Angular (@angular) | Twitter",
+   "link": "https://twitter.com/angular?lang=en",
+   "snippet": "Angular docs traffic just crossed 1.5M monthly visitors. That's more than 50% \nyearly growth! We couldn't have done this alone. Thanks so very much to the \nentire ..."
+  },
+  {
+   "title": "Angular Crash Course - 2019 - YouTube",
+   "link": "https://www.youtube.com/watch?v=Fdf5aTYRW0E",
+   "snippet": "Jan 23, 2019 ... In this video we will talk about what Angular is and then jump in and build a small \napp With Angular 7, looking at most of the fundamental ..."
+  }
+ ]
+}
