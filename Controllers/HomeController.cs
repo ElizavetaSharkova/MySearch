@@ -10,10 +10,10 @@ namespace MySearch.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly DbEditor db;
-        private readonly HttpService service;
+        private readonly IDbEditor db;
+        private readonly IService service;
 
-        public HomeController(DbEditor db, HttpService service)
+        public HomeController(IDbEditor db, IService service)
         {
             this.db = db;
             this.service = service;
@@ -29,16 +29,10 @@ namespace MySearch.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
         [HttpPost]
         public async Task<IActionResult> Index(string searchTerm)
         {
-            List<SearchResult> results = await service.GetResultsFromFastestEngine(searchTerm, db);
+            List<SearchResult> results = (await service.GetResultsFromFastestEngine(searchTerm, db)).ToList();
 
             AddRequestToDb(searchTerm, results);
             ViewBag.searchString = searchTerm;

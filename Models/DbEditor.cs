@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace MySearch.Models
 {
-    public class DbEditor
+    public class DbEditor: IDbEditor
     {
         private readonly SearchContext context;
         public DbEditor(SearchContext context)

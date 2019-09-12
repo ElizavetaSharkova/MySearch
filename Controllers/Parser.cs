@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -117,7 +118,7 @@ namespace MySearch.Controllers
         {
             try
             {
-                string[] format = { "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy H:mm:ss", "dd-MM-yyyyTHH:mm:ss.fffZ", "dd-MM-yyyyTH:mm:ss.fffZ", "yyyyMMddTHHmmss" };
+                string[] format = { "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy H:mm:ss", "yyyy-MM-ddTHH:mm:ss.fffZ", "yyyy-MM-ddTH:mm:ss.fffZ", "yyyyMMddTHHmmss" };
                 return DateTime.ParseExact(stringDate, format, null);
             }
             catch
@@ -134,7 +135,9 @@ namespace MySearch.Controllers
         {
             try
             {
-                return group.Element("doc").Element(name).Value;
+                string value = group.Element("doc").Element(name).Value.Replace("\r\n", "").Trim();
+                value = Regex.Replace(value, "[ ]+", " ");
+                return value;
             }
             //if response hasn't this element
             catch

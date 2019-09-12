@@ -41,23 +41,15 @@ namespace MySearch
             services.AddDbContext<SearchContext>
                 (options => options.UseSqlServer(connection));
 
-            services.AddTransient<DbEditor>();
-            services.AddTransient<HttpService>();
+            services.AddTransient<IDbEditor, DbEditor>();
+            services.AddTransient<IService, HttpService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+            
+             app.UseDeveloperExceptionPage();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

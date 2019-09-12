@@ -2,6 +2,8 @@
 /bin
 /obj
 /packages
+/XUnitTestProject/bin
+/XUnitTestProject/obj
 *.user
 *.log
 *.suo

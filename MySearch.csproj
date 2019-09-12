@@ -8,13 +8,37 @@
   <ItemGroup>
     <Compile Remove="Migrations\20190910003031_Add_RequestParameters_and_ResponseType.cs" />
     <Compile Remove="Migrations\20190910003031_Add_RequestParameters_and_ResponseType.Designer.cs" />
+    <Compile Remove="XUnitTestProject\Parser_UnitTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="XUnitTestProject\Parser_UnitTests.cs" />
   </ItemGroup>
 
 
   <ItemGroup>
+    <PackageReference Include="CsQuery" Version="1.3.4" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Update="XUnitTestProject\testData\XElement1.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="XUnitTestProject\testData\XElement2.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="XUnitTestProject\testData\yandexResponse1.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="XUnitTestProject\testData\yandexResponse2.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

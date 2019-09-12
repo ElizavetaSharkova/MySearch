@@ -1,0 +1,669 @@
+<?xml version="1.0" encoding="utf-8"?>
+<yandexsearch version="1.0">
+  <request>
+    <query>
+      angular
+    </query>
+    <page>
+      0
+    </page>
+    <sortby order="descending" priority="no">
+      rlv
+    </sortby>
+    <maxpassages>
+      1
+    </maxpassages>
+    <groupings>
+      <groupby attr="d" mode="deep" groups-on-page="10" docs-in-group="1" curcateg="-1" />
+    </groupings>
+  </request>
+  <response date="20190911T151853">
+    <reqid>
+      1568215133080078-1043591425703441143455050-sas1-5630-XML
+    </reqid>
+    <found priority="phrase">
+      1129659
+    </found>
+    <found priority="strict">
+      1129659
+    </found>
+    <found priority="all">
+      1129659
+    </found>
+    <found-human>
+      1 mln. answers found
+      </found-human>
+    <results>
+      <grouping attr="d" mode="deep" groups-on-page="10" docs-in-group="1" curcateg="-1">
+        <found priority="phrase">
+          1524
+        </found>
+        <found priority="strict">
+          1524
+        </found>
+        <found priority="all">
+          1524
+        </found>
+        <found-docs priority="phrase">
+          1129250
+          </found-docs>
+        <found-docs priority="strict">
+          1129250
+          </found-docs>
+        <found-docs priority="all">
+          1129250
+          </found-docs>
+        <found-docs-human>
+          found 1 mln. answers
+          </found-docs-human>
+        <page first="1" last="10">
+          0
+        </page>
+        <group>
+          <categ attr="d" name="angular.io" />
+          <doccount>
+            16236
+          </doccount>
+          <relevance />
+          <doc id="Z3BF6DA9FF3CC11C1">
+            <relevance />
+            <url>
+              https://angular.io/?
+            </url>
+            <domain>
+              angular.io
+            </domain>
+            <title>
+              <hlword>
+                Angular
+              </hlword>
+            </title>
+            <modtime>
+              20180314T063051
+            </modtime>
+            <size>
+              1175
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <passages>
+              <passage>
+                <hlword>
+                  Angular
+                </hlword>
+                is a platform for building mobile and desktop web applications. Join the community of millions of developers who build compelling user interfaces with 
+                <hlword>
+                  Angular
+                </hlword>
+                .
+              </passage>
+            </passages>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                en
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+            <saved-copy-url>
+              https://hghltd.yandex.net/yandbtm?lang=en&amp;fmode=inject&amp;tm=1568215133&amp;tld=com&amp;la=1567736832&amp;text=angular&amp;url=https%3A%2F%2Fangular.io%2F&amp;l10n=en&amp;mime=html&amp;sign=f5b0613de8d9a549c1e7163a9a7e6fe6&amp;keyno=0
+              </saved-copy-url>
+          </doc>
+        </group>
+        <group>
+          <categ attr="d" name="angularjs.org" />
+          <doccount>
+            760
+          </doccount>
+          <relevance />
+          <doc id="Z9EC2074F172E2DCB">
+            <relevance />
+            <url>
+              https://angularjs.org/
+            </url>
+            <domain>
+              angularjs.org
+            </domain>
+            <title>
+              AngularJS � Superheroic JavaScript MVW Framework
+            </title>
+            <modtime>
+              20121018T184238
+            </modtime>
+            <size>
+              1060
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <passages>
+              <passage>
+                Go to the latest 
+                <hlword>
+                  Angular
+                </hlword>
+                . This site and all of its contents are referring to AngularJS (version 1.x), if you are looking for the latest 
+                <hlword>
+                  Angular
+                </hlword>
+                , please visit 
+                <hlword>
+                  angular
+                </hlword>
+                .io.
+              </passage>
+            </passages>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                en
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+            <saved-copy-url>
+              https://hghltd.yandex.net/yandbtm?lang=en&amp;fmode=inject&amp;tm=1568215133&amp;tld=com&amp;la=1567950720&amp;text=angular&amp;url=https%3A%2F%2Fangularjs.org%2F&amp;l10n=en&amp;mime=html&amp;sign=23eb3c8d271a63666e91586303d64c14&amp;keyno=0
+              </saved-copy-url>
+          </doc>
+        </group>
+        <group>
+          <categ attr="d" name="github.com" />
+          <doccount>
+            6772
+          </doccount>
+          <relevance />
+          <doc id="Z9FA5947D0A1E7783">
+            <relevance />
+            <url>
+              https://github.com/angular
+            </url>
+            <domain>
+              github.com
+            </domain>
+            <title>
+              <hlword>
+                Angular
+              </hlword>
+              has 191 repositories available. Follow their code on GitHub.
+            </title>
+            <modtime>
+              20101104T022345
+            </modtime>
+            <size>
+              1930
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <passages>
+              <passage>
+                Pinned repositories. 
+                <hlword>
+                  angular
+                </hlword>
+                . One framework.
+              </passage>
+              <passage>
+                <hlword>
+                  angular
+                </hlword>
+                material material-design 
+                <hlword>
+                  angular
+                </hlword>
+                -components.
+              </passage>
+            </passages>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                en
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+            <saved-copy-url>
+              https://hghltd.yandex.net/yandbtm?lang=en&amp;fmode=inject&amp;tm=1568215133&amp;tld=com&amp;la=1567952768&amp;text=angular&amp;url=https%3A%2F%2Fgithub.com%2Fangular&amp;l10n=en&amp;mime=html&amp;sign=df4d053557b93d142ece33179cde24e2&amp;keyno=0
+              </saved-copy-url>
+          </doc>
+        </group>
+        <group>
+          <categ attr="d" name="en.wikipedia.org" />
+          <doccount>
+            54
+          </doccount>
+          <relevance />
+          <doc id="Z4229A60A14D0D703">
+            <relevance />
+            <url>
+              https://en.wikipedia.org/wiki/Angular_(web_framework)
+            </url>
+            <domain>
+              en.wikipedia.org
+            </domain>
+            <title>
+              <hlword>
+                Angular
+              </hlword>
+              (web framework) - Wikipedia
+            </title>
+            <headline>
+              <hlword>
+                Angular
+              </hlword>
+              (commonly referred to as &quot;
+              <hlword>
+                Angular
+              </hlword>
+              2+&quot; or &quot;
+              <hlword>
+                Angular
+              </hlword>
+              v2 and above&quot;) is a TypeScript-based open-source web application framework led by the 
+              <hlword>
+                Angular
+              </hlword>
+              Team at Google and by a community of...
+            </headline>
+            <modtime>
+              20190528T030000
+            </modtime>
+            <size>
+              3901
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                en
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+            <saved-copy-url>
+              https://hghltd.yandex.net/yandbtm?lang=en&amp;fmode=inject&amp;tm=1568215133&amp;tld=com&amp;la=1567601152&amp;text=angular&amp;url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FAngular_%28web_framework%29&amp;l10n=en&amp;mime=html&amp;sign=607d97a0c652fe9e3de70c700c523ea7&amp;keyno=0
+              </saved-copy-url>
+          </doc>
+        </group>
+        <group>
+          <categ attr="d" name="wikipedia.org" />
+          <doccount>
+            35
+          </doccount>
+          <relevance />
+          <doc id="Z3005C5760B55EA73">
+            <relevance />
+            <url>
+              https://en.m.wikipedia.org/wiki/AngularJS
+            </url>
+            <domain>
+              en.m.wikipedia.org
+            </domain>
+            <title>
+              AngularJS - Wikipedia
+            </title>
+            <modtime>
+              20121220T061521
+            </modtime>
+            <size>
+              3466
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <passages>
+              <passage>
+                <hlword>
+                  Angular
+                </hlword>
+                interprets those attributes as directives to bind input or output parts of the page to a model that is represented by standard JavaScript
+              </passage>
+              <passage>
+                Subsequent versions of AngularJS are simply called 
+                <hlword>
+                  Angular
+                </hlword>
+                .
+              </passage>
+            </passages>
+            <properties>
+              <TurboCgiUrl>
+                https://en.wikipedia.org/wiki/AngularJS
+              </TurboCgiUrl>
+              <TurboFallback>
+                https://en.m.wikipedia.org/wiki/AngularJS
+              </TurboFallback>
+              <TurboLink>
+                https://yandex.ru/turbo?text=https%3A//en.wikipedia.org/wiki/AngularJS
+              </TurboLink>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                en
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+            <saved-copy-url>
+              https://hghltd.yandex.net/yandbtm?lang=en&amp;fmode=inject&amp;tm=1568215133&amp;tld=com&amp;la=1567888000&amp;text=angular&amp;url=https%3A%2F%2Fen.m.wikipedia.org%2Fwiki%2FAngularJS&amp;l10n=en&amp;mime=html&amp;sign=45dbc6733b5badf97d3c09328f6cc45f&amp;keyno=0
+              </saved-copy-url>
+          </doc>
+        </group>
+        <group>
+          <categ attr="d" name="w3schools.com" />
+          <doccount>
+            190
+          </doccount>
+          <relevance />
+          <doc id="Z5BCDE9B0966B841D">
+            <relevance />
+            <url>
+              https://www.w3schools.com/Angular/
+            </url>
+            <domain>
+              www.w3schools.com
+            </domain>
+            <title>
+              AngularJS Tutorial
+            </title>
+            <modtime>
+              20151130T192220
+            </modtime>
+            <size>
+              1754
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <passages>
+              <passage>
+                &lt;!DOCTYPE html&gt; &lt;html lang=&quot;en-US&quot;&gt; &lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/
+                <hlword>
+                  angular
+                </hlword>
+                .min.js&quot;&gt;&lt;/script&gt; &lt;body&gt;.
+              </passage>
+            </passages>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                en
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+            <saved-copy-url>
+              https://hghltd.yandex.net/yandbtm?lang=en&amp;fmode=inject&amp;tm=1568215133&amp;tld=com&amp;la=1567707648&amp;text=angular&amp;url=https%3A%2F%2Fwww.w3schools.com%2FAngular%2F&amp;l10n=en&amp;mime=html&amp;sign=a9f15e78a54b01bb75165958a0a65f8b&amp;keyno=0
+              </saved-copy-url>
+          </doc>
+        </group>
+        <group>
+          <categ attr="d" name="youtube.com" />
+          <doccount>
+            8970
+          </doccount>
+          <relevance />
+          <doc id="ZCBBA58AFC6BE3B14">
+            <relevance />
+            <url>
+              https://www.youtube.com/feed/UCbn1OgGei-DV7aSRo_HaAiw
+            </url>
+            <domain>
+              www.youtube.com
+            </domain>
+            <title>
+              <hlword>
+                Angular
+              </hlword>
+              - YouTube
+            </title>
+            <modtime>
+              20140904T143139
+            </modtime>
+            <size>
+              1623
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <passages>
+              <passage>
+                <hlword>
+                  Angular
+                </hlword>
+                . ������������� ����������������� ��������. 97 717.
+              </passage>
+              <passage>
+                <hlword>
+                  Angular
+                </hlword>
+                Playground V3, Theory of RxJS, Packaging 
+                <hlword>
+                  Angular
+                </hlword>
+                Libraries - �����������������: 1 ��� 57 �����.
+              </passage>
+            </passages>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                ru
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+            <saved-copy-url>
+              https://hghltd.yandex.net/yandbtm?lang=ru&amp;fmode=inject&amp;tm=1568215133&amp;tld=com&amp;la=1567896448&amp;text=angular&amp;url=https%3A%2F%2Fwww.youtube.com%2Ffeed%2FUCbn1OgGei-DV7aSRo_HaAiw&amp;l10n=en&amp;mime=html&amp;sign=c9945fe1dd89c598d0814c3e491c1ae1&amp;keyno=0
+              </saved-copy-url>
+          </doc>
+        </group>
+        <group>
+          <categ attr="d" name="angular.cn" />
+          <doccount>
+            657
+          </doccount>
+          <relevance />
+          <doc id="ZF7F6C422BEBD5347">
+            <relevance />
+            <url>
+              https://angular.cn/
+            </url>
+            <domain>
+              angular.cn
+            </domain>
+            <title>
+              <hlword>
+                Angular
+              </hlword>
+            </title>
+            <modtime>
+              20151226T112937
+            </modtime>
+            <size>
+              30
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <passages>
+              <passage>
+                <hlword>
+                  Angular
+                </hlword>
+                is a platform for building mobile and desktop web applications. Join the community of millions of developers who build compelling user interfaces with 
+                <hlword>
+                  Angular
+                </hlword>
+                .
+              </passage>
+            </passages>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                ca
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+            <saved-copy-url>
+              https://hghltd.yandex.net/yandbtm?lang=ca&amp;fmode=inject&amp;tm=1568215133&amp;tld=com&amp;la=1567865856&amp;text=angular&amp;url=https%3A%2F%2Fangular.cn%2F&amp;l10n=en&amp;mime=html&amp;sign=985eb09e5c775530205d4ebf0a5854a6&amp;keyno=0
+              </saved-copy-url>
+          </doc>
+        </group>
+        <group>
+          <categ attr="d" name="appdividend.com" />
+          <doccount>
+            16
+          </doccount>
+          <relevance />
+          <doc id="Z3C4D5AB7921A9D67">
+            <relevance />
+            <url>
+              https://appdividend.com/category/angular/
+            </url>
+            <domain>
+              appdividend.com
+            </domain>
+            <title>
+              <hlword>
+                Angular
+              </hlword>
+              Tutorials
+            </title>
+            <modtime>
+              20171019T052005
+            </modtime>
+            <size>
+              1697
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <passages>
+              <passage>
+                <hlword>
+                  Angular
+                </hlword>
+                4 Tutorials. AngularJS version 4 is latest javascript framework which uses TypeScript as their main language.
+              </passage>
+              <passage>
+                How To Update 
+                <hlword>
+                  Angular
+                </hlword>
+                CLI To Version 8 | 
+                <hlword>
+                  Angular
+                </hlword>
+                8 CLI Upgrade is today's topic.
+              </passage>
+            </passages>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                en
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+            <saved-copy-url>
+              https://hghltd.yandex.net/yandbtm?lang=en&amp;fmode=inject&amp;tm=1568215133&amp;tld=com&amp;la=1567661440&amp;text=angular&amp;url=https%3A%2F%2Fappdividend.com%2Fcategory%2Fangular%2F&amp;l10n=en&amp;mime=html&amp;sign=741285e041b668bd63e3536dfa419dde&amp;keyno=0
+              </saved-copy-url>
+          </doc>
+        </group>
+        <group>
+          <categ attr="d" name="angular-up.com" />
+          <doccount>
+            1
+          </doccount>
+          <relevance />
+          <doc id="Z46466141F872BBA0">
+            <relevance />
+            <url>
+              https://angular-up.com/
+            </url>
+            <domain>
+              angular-up.com
+            </domain>
+            <title>
+              AngularUP 2019 | Building a Chatbot for an 
+              <hlword>
+                Angular
+              </hlword>
+              Application
+            </title>
+            <modtime>
+              20160719T051131
+            </modtime>
+            <size>
+              4948
+            </size>
+            <charset>
+              utf-8
+            </charset>
+            <passages>
+              <passage>
+                Israel's International 
+                <hlword>
+                  Angular
+                </hlword>
+                Conference &amp; Tour.
+              </passage>
+              <passage>
+                Hear top speakers from around the world. Learn about the present and future of 
+                <hlword>
+                  Angular
+                </hlword>
+                and its ecosystem, TypeScript, tools and much more.
+              </passage>
+            </passages>
+            <properties>
+              <_PassagesType>
+                0
+              </_PassagesType>
+              <lang>
+                en
+              </lang>
+            </properties>
+            <mime-type>
+              text/html
+              </mime-type>
+            <saved-copy-url>
+              https://hghltd.yandex.net/yandbtm?lang=en&amp;fmode=inject&amp;tm=1568215133&amp;tld=com&amp;la=1567585152&amp;text=angular&amp;url=https%3A%2F%2Fangular-up.com%2F&amp;l10n=en&amp;mime=html&amp;sign=9a0e73fe439dbf2ce9dd876000749c64&amp;keyno=0
+              </saved-copy-url>
+          </doc>
+        </group>
+      </grouping>
+    </results>
+  </response>
+</yandexsearch>

@@ -7,14 +7,17 @@ using System.Threading.Tasks;
 
 namespace MySearch.Controllers
 {
-    public class HttpService
+    public class HttpService: IService
     {
-        private DbEditor db;
+        private IDbEditor db;
         public HttpService()
         {
         }
 
-        public async Task<List<SearchResult>> GetResultsFromFastestEngine(string searchTerm, DbEditor db)
+        /// <summary>
+        /// Send request to each search engine, wait the fastest response and parse it
+        /// </summary>
+        public async Task<IEnumerable<SearchResult>> GetResultsFromFastestEngine(string searchTerm, IDbEditor db)
         {
             this.db = db;
             IQueryable<SearchEngine> searchEngines = db.GetEngines();
@@ -31,25 +34,12 @@ namespace MySearch.Controllers
             return results;
         }
 
-        public static HttpWebRequest BuildRequestToEngine(string searchQuery, SearchEngine engine)
+        /// <summary>
+        /// Build request url for this engine, create HttpWebRequest, add headers to request
+        /// </summary>
+        public HttpWebRequest BuildRequestToEngine(string searchQuery, SearchEngine engine)
         {
-            string completeUrl = engine.BaseUrl;
-            foreach (RequestsParameter parameter in engine.Parameters)
-            {
-                if (parameter.ParametrName == "search")
-                {
-                    completeUrl += parameter.ParametrValue + "=" + Uri.EscapeDataString(searchQuery);
-                }
-                else
-                {
-                    completeUrl += parameter.ParametrName + "=" + parameter.ParametrValue;
-                }
-
-                if (parameter != engine.Parameters.Last<RequestsParameter>())
-                {
-                    completeUrl += "&";
-                }
-            }
+            string completeUrl = GetCompliteUrl(searchQuery, engine.Parameters, engine.BaseUrl);
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(completeUrl);
 
@@ -67,10 +57,32 @@ namespace MySearch.Controllers
             return request;
         }
 
+        public string GetCompliteUrl(string searchQuery, IEnumerable<RequestsParameter> parameters, string baseUrl)
+        {
+            string completeUrl = baseUrl;
+            foreach (RequestsParameter parameter in parameters)
+            {
+                if (parameter.ParametrName == "search")
+                {
+                    completeUrl += parameter.ParametrValue + "=" + Uri.EscapeDataString(searchQuery);
+                }
+                else
+                {
+                    completeUrl += parameter.ParametrName + "=" + parameter.ParametrValue;
+                }
+
+                if (parameter != parameters.Last<RequestsParameter>())
+                {
+                    completeUrl += "&";
+                }
+            }
+            return completeUrl;
+        }
+
         /// <summary>
         /// Makes a request to the any API and returns data as a ParseResponseStruct with response and engine.
         /// </summary>
-        private async Task<ParseResponseStruct> SendWebRequestAsync(string searchQuery, SearchEngine engine)
+        public async Task<ParseResponseStruct> SendWebRequestAsync(string searchQuery, SearchEngine engine)
         {
             HttpWebRequest request = BuildRequestToEngine(searchQuery, engine);
             HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
@@ -91,6 +103,9 @@ namespace MySearch.Controllers
             return prs;
         }
 
+        /// <summary>
+        /// Header from response set to header for next request to this search engine
+        /// </summary>
         public void SaveHeader(RequestHeader requestHeader, string responseHeader)
         {
             if (responseHeader.Contains(requestHeader.HeaderName.Substring(0, 9)) &&
