@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MySearch.Models
 {
-    public interface IService
+    public interface IRequester
     {
         Task<IEnumerable<SearchResult>> GetResultsFromFastestEngine(string searchTerm, IDbEditor db);
 

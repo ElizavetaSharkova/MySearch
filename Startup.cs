@@ -42,7 +42,7 @@ namespace MySearch
                 (options => options.UseSqlServer(connection));
 
             services.AddTransient<IDbEditor, DbEditor>();
-            services.AddTransient<IService, HttpService>();
+            services.AddTransient<IRequester, SearchSystemsRequester>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

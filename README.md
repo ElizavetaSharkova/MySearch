@@ -5,6 +5,8 @@ ASP.NET Core App for search something in Google, Yandex or Bing:
 3. The fastest response is parsing, saving in db and displaying on page.
 4. User can search by history (by db data)
 
+The project will be published at url: https://mysearch20190930022225.azurewebsites.net
+
 Project include xUnit test project and test data, but not all methods are covered by tests.
 
 Install:

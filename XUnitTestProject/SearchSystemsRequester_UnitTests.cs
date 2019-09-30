@@ -10,7 +10,7 @@ using Xunit;
 
 namespace XUnitTestProject
 {
-    public class HttpService_UnitTests
+    public class SearchSystemsRequester_UnitTests
     {
 
         [Theory(DisplayName = "GetCompliteUrl")]
@@ -35,7 +35,7 @@ namespace XUnitTestProject
                 ParametrValue = parameterValue2,
                 RequestsParameterId = 2
             });
-            HttpService service = new HttpService();
+            SearchSystemsRequester service = new SearchSystemsRequester();
 
             string result = service.GetCompliteUrl(searchQuery, parameters, baseUrl);
 
