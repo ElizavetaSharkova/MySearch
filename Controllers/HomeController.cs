@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +10,12 @@ namespace MySearch.Controllers
     public class HomeController : Controller
     {
         private readonly IDbEditor db;
-        private readonly IService service;
+        private readonly IRequester requester;
 
-        public HomeController(IDbEditor db, IService service)
+        public HomeController(IDbEditor db, IRequester requester)
         {
             this.db = db;
-            this.service = service;
+            this.requester = requester;
         }
 
         public IActionResult Index()
@@ -32,35 +31,34 @@ namespace MySearch.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(string searchTerm)
         {
-            List<SearchResult> results = (await service.GetResultsFromFastestEngine(searchTerm, db)).ToList();
+            SearchRequest request = CreateRequest(searchTerm);
+            request.SearchResults = (await requester.GetResultsFromFastestEngine(searchTerm, db)).ToList();
 
-            AddRequestToDb(searchTerm, results);
-            ViewBag.searchString = searchTerm;
-            ViewBag.results = results;
+            db.SaveRequest(request);
+
             ViewBag.isDisplayEngine = true;
-            return View();
+            return View(request);
         }
 
         [HttpPost]
         public IActionResult History(string searchTerm)
         {
-            List<SearchResult> results = db.GetResultsByRequest(searchTerm).ToList();
-            ViewBag.searchString = searchTerm;
-            ViewBag.results = results;
-            return View();
+            SearchRequest request = CreateRequest(searchTerm);
+            request.SearchResults = db.GetResultsByRequest(searchTerm).ToList();
+
+            return View(request);
         }
 
-        private void AddRequestToDb(string requestString, List<SearchResult> results)
+        private SearchRequest CreateRequest(string requestString)
         {
             SearchRequest request = new SearchRequest
             {
                 SearchRequestId = default,
                 SearchString = requestString,
-                SearchDate = DateTime.Now,
-                SearchResults = results
+                SearchDate = DateTime.Now
             };
 
-            db.SaveRequest(request);
+            return request;
         }
     }
 }

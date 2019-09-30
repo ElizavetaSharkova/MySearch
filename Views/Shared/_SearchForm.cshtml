@@ -1,4 +1,13 @@
-﻿<form method="post" action="">
-    <input type="search" name="searchTerm" placeholder="input your request..." value="@ViewBag.searchString">
+﻿@model SearchRequest
+@{
+    string value = string.Empty;
+    @if (Model != null)
+    {
+        value = Model.SearchString;
+    }
+}
+
+<form method="post" action="">
+    <input type="search" name="searchTerm" placeholder="input your request..." value="@value">
     <button type="submit" />
 </form>

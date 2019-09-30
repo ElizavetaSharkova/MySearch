@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace MySearch.Controllers
 {
-    public class HttpService: IService
+    public class SearchSystemsRequester : IRequester
     {
         private IDbEditor db;
-        public HttpService()
+        public SearchSystemsRequester()
         {
         }
 

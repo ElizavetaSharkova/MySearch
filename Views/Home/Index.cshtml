@@ -1,15 +1,19 @@
-﻿@{
+﻿@model SearchRequest
+@{
     ViewData["Title"] = "Home Page";
 }
 
-    <div class="text-center">
-        <h1 class="display-4">Welcome</h1>
-        <h2><i>Let's search:</i></h2>
-        <div class="center-block">
-            <partial name="_SearchForm" />
-        </div>
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <h2><i>Let's search:</i></h2>
+    <div class="center-block">
+        <partial name="_SearchForm" />
     </div>
+</div>
+@if (Model != null)
+{
     <div class="center-block" style="width: 75%;">
         <partial name="_SearchResults" />
     </div>
-    
+}
+
