@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MySearch.Interfaces;
 using MySearch.Models;
 
 namespace MySearch.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IDbEditor db;
+        private readonly IDbProvider db;
         private readonly IRequester requester;
 
-        public HomeController(IDbEditor db, IRequester requester)
+        public HomeController(IDbProvider db, IRequester requester)
         {
             this.db = db;
             this.requester = requester;

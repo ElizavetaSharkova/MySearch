@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using MySearch.Models;
-using MySearch.Controllers;
+using MySearch.Interfaces;
+using MySearch.DbProviders;
+using MySearch.Services;
 
 namespace MySearch
 {
@@ -41,7 +37,7 @@ namespace MySearch
             services.AddDbContext<SearchContext>
                 (options => options.UseSqlServer(connection));
 
-            services.AddTransient<IDbEditor, DbEditor>();
+            services.AddTransient<IDbProvider, DbProvider>();
             services.AddTransient<IRequester, SearchSystemsRequester>();
         }
 

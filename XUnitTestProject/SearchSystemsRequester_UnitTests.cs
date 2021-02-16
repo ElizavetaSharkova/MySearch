@@ -1,11 +1,6 @@
-using MySearch.Controllers;
-using MySearch.Models;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Xml;
-using System.Xml.Linq;
+using MySearch.Models;
+using MySearch.Services;
 using Xunit;
 
 namespace XUnitTestProject

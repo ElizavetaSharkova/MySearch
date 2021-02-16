@@ -1,13 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MySearch.Controllers;
-using MySearch.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Xml;
-using System.Xml.Linq;
+using MySearch.DbProviders;
+using MySearch.Models;
+using MySearch.Services;
 using Xunit;
 
 namespace XUnitTestProject
@@ -18,9 +15,9 @@ namespace XUnitTestProject
         [Fact(DisplayName = "Index")]
         public void Index_Get_Test()
         {
-            FakeDbEditor dbEditor = new FakeDbEditor();
+            FakeDbProvider dbProvider = new FakeDbProvider();
             SearchSystemsRequester service = new SearchSystemsRequester();
-            HomeController controller = new HomeController(dbEditor, service);
+            HomeController controller = new HomeController(dbProvider, service);
 
             var result = controller.Index();
 
@@ -34,9 +31,9 @@ namespace XUnitTestProject
         [Fact(DisplayName = "History")]
         public void History_Get_Test()
         {
-            FakeDbEditor dbEditor = new FakeDbEditor();
+            FakeDbProvider dbProvider = new FakeDbProvider();
             SearchSystemsRequester service = new SearchSystemsRequester();
-            HomeController controller = new HomeController(dbEditor, service);
+            HomeController controller = new HomeController(dbProvider, service);
 
             var result = controller.History();
             
@@ -51,11 +48,11 @@ namespace XUnitTestProject
         [InlineData("asp.net")]
         public void History_Post_Test(string searchString)
         {
-            FakeDbEditor dbEditor = new FakeDbEditor();
-            dbEditor.searchResults = new List<SearchResult>();
-            dbEditor.searchRequests = new List<SearchRequest>();
+            FakeDbProvider dbProvider = new FakeDbProvider();
+            dbProvider.searchResults = new List<SearchResult>();
+            dbProvider.searchRequests = new List<SearchRequest>();
             SearchSystemsRequester service = new SearchSystemsRequester();
-            HomeController controller = new HomeController(dbEditor, service);
+            HomeController controller = new HomeController(dbProvider, service);
 
             SearchResult searchResult = new SearchResult
             {
@@ -74,12 +71,12 @@ namespace XUnitTestProject
                 SearchDate = DateTime.Now,
                 SearchResults = req1
             };
-            List<SearchRequest> req = (List<SearchRequest>)dbEditor.searchRequests;
+            List<SearchRequest> req = (List<SearchRequest>)dbProvider.searchRequests;
             req.Add(searchRequest);
-            dbEditor.searchRequests = req;
-            List<SearchResult> res = (List<SearchResult>)dbEditor.searchResults;
+            dbProvider.searchRequests = req;
+            List<SearchResult> res = (List<SearchResult>)dbProvider.searchResults;
             res.Add(searchResult);
-            dbEditor.searchResults = res;
+            dbProvider.searchResults = res;
 
             var result = controller.History(searchString);
 

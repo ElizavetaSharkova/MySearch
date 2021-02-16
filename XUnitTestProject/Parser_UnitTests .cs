@@ -1,11 +1,10 @@
-using MySearch.Controllers;
-using MySearch.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Xml;
 using System.Xml.Linq;
+using MySearch.Models;
+using MySearch.Services;
 using Xunit;
 
 namespace XUnitTestProject
@@ -20,8 +19,8 @@ namespace XUnitTestProject
         [InlineData("05-09-2019 9:57:00", null, null, null, null, null, null)]
         public void TryParseStringDate_Test(string stringDate, int? year, int? month, int? day, int? hour, int? minute, int? second  )
         {
-            DateTime? result = Parser.TryParseStringDate(stringDate);
-            if (year==null && year == month && month == day && day == hour && hour == minute && minute == second)
+            DateTime? result = ParseService.TryParseStringDate(stringDate);
+            if (!year.HasValue && !month.HasValue && !day.HasValue && !hour.HasValue && !minute.HasValue && !second.HasValue)
             {
                 Assert.Null(result);
             }
@@ -48,8 +47,8 @@ namespace XUnitTestProject
             string path = Environment.CurrentDirectory + "\\testData\\" + fileName;
             XmlTextReader xmlReader = new XmlTextReader(path);
             XDocument xmlResponse = XDocument.Load(xmlReader);
-            XElement group = xmlResponse.Element("yandexsearch").Element(groupName); 
-            string result = Parser.GetValue(group, name);
+            XElement group = xmlResponse.Element("yandexsearch")?.Element(groupName); 
+            string result = ParseService.GetValue(group, name);
             Assert.Equal(expectedValue, result);
         }
 
@@ -74,10 +73,6 @@ namespace XUnitTestProject
             )]
         public void ParseXml_Test(string fileName, int count, int index, string title, string url, string description, string date )
         {
-            string path = Environment.CurrentDirectory + "\\testData\\" + fileName;
-            XmlTextReader xmlReader = new XmlTextReader(path);
-            XDocument xmlResponse = XDocument.Load(xmlReader);
-
             ResponseType type = new ResponseType
             {
                 ResponseTypeId = default,
@@ -107,8 +102,8 @@ namespace XUnitTestProject
                 IndexedTime = DateTime.ParseExact(date, "yyyyMMddTHHmmss", null)
             };
 
-
-            List<SearchResult> results = Parser.ParseXml(xmlResponse, engine);
+            Stream stream = GetFileStream(fileName);
+            List<SearchResult> results = ParseService.ParseXml(stream, engine);
 
             Assert.Equal(count, results.Count);
             Assert.Equal(expectedResults.Title, results[index].Title);
@@ -150,14 +145,6 @@ namespace XUnitTestProject
             )]
         public void ParseJson_Test(string fileName, int count, int index, string RootElementPath, string TitleElement, string UrlElement, string DateElement, string title, string url, string description, string date)
         {
-            string path = Environment.CurrentDirectory + "\\testData\\" + fileName;
-            string json; // = System.IO.File.ReadAllText(path);
-
-            using (StreamReader sr = new StreamReader(path))
-            {
-                json = sr.ReadToEnd();
-            }
-
             ResponseType type = new ResponseType
             {
                 ResponseTypeId = default,
@@ -190,8 +177,8 @@ namespace XUnitTestProject
                 expectedResults.IndexedTime = DateTime.ParseExact(date, "dd.MM.yyyy HH:mm:ss", null);
             else expectedResults.IndexedTime = null;
 
-
-            List<SearchResult> results = Parser.ParseJson(json, engine);
+            Stream stream = GetFileStream(fileName);
+            List<SearchResult> results = ParseService.ParseJson(stream, engine);
 
             Assert.Equal(count, results.Count);
             Assert.Equal(expectedResults.Title, results[index].Title);
@@ -201,6 +188,19 @@ namespace XUnitTestProject
             Assert.Equal(expectedResults.SearchEngine, results[index].SearchEngine);
             Assert.Equal(expectedResults.Request, results[index].Request);
             Assert.Equal(expectedResults.SearchResultId, results[index].SearchResultId);
+        }
+
+        private static MemoryStream GetFileStream(string fileName)
+        {
+            string path = Environment.CurrentDirectory + "\\testData\\" + fileName;
+            string text; // = System.IO.File.ReadAllText(path);
+
+            using (StreamReader sr = new StreamReader(path))
+            {
+                text = sr.ReadToEnd();
+            }
+
+            return new MemoryStream(System.Text.Encoding.UTF8.GetBytes(text));
         }
     }
 }

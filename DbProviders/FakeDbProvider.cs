@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using MySearch.Interfaces;
+using MySearch.Models;
 
-namespace MySearch.Models
+namespace MySearch.DbProviders
 {
-    public class FakeDbEditor: IDbEditor
+    public class FakeDbProvider: IDbProvider
     {
         public IEnumerable<SearchResult> searchResults;
         public IEnumerable<SearchRequest> searchRequests;
@@ -14,8 +14,8 @@ namespace MySearch.Models
         public IEnumerable<RequestsParameter> requestsParameters;
         public IEnumerable<ResponseType> responseTypes;
 
-        public FakeDbEditor() { }
-        public FakeDbEditor(IEnumerable<SearchResult> searchResults, 
+        public FakeDbProvider() { }
+        public FakeDbProvider(IEnumerable<SearchResult> searchResults, 
             IEnumerable<SearchRequest> searchRequests,
             IEnumerable<SearchEngine> searchEngines,
             IEnumerable<RequestHeader> requestHeaders,

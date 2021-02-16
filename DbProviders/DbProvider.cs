@@ -1,12 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq;
+﻿using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using MySearch.Interfaces;
+using MySearch.Models;
 
-namespace MySearch.Models
+namespace MySearch.DbProviders
 {
-    public class DbEditor: IDbEditor
+    public class DbProvider: IDbProvider
     {
         private readonly SearchContext context;
-        public DbEditor(SearchContext context)
+        public DbProvider(SearchContext context)
         {
             this.context = context;
         }
@@ -55,24 +57,13 @@ namespace MySearch.Models
 
         public bool IsExistResult(SearchResult result)
         {
-            IQueryable<SearchRequest> requests = context.SearchRequests.Where(x => 
-                x.SearchString == result.Request.SearchString
-            );
-            if (requests == null)
-            {
-                return false;
-            }
-            IQueryable<SearchResult> results = context.SearchResults.Where(x => 
-                x.Url == result.Url &&
-                x.IndexedTime >= result.IndexedTime
-            );
-
-            return (results != null);
+            return context.SearchRequests.Any(x => x.SearchString == result.Request.SearchString) &&
+                   context.SearchResults.Any(x => x.Url == result.Url && x.IndexedTime >= result.IndexedTime);
         }
 
         public void SaveRequestHeaderValue(int id, string value)
         {
-            RequestHeader header = context.RequestHeaders.Where(x => x.RequestHeaderId == id).First();
+            RequestHeader header = context.RequestHeaders.First(x => x.RequestHeaderId == id);
             header.HeaderValue = value;
             context.Entry(header).State = EntityState.Modified;
             context.SaveChanges();
